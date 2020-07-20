@@ -1,0 +1,374 @@
+CREATE or REPLACE VIEW chercheur_o (n_o, nom_o, univ_o, n_equ_o, spec_o)
+ AS Select Numchercheur, nomchercheur, universite, Numequipe, specialite FROM
+chercheurs
+ WHERE specialite IN (select specialite from specialite where
+nom_specialite like '%objet%');
+
+
+ Set long 1000
+ SELECT * from chercheur_o;
+ clear column
+ Select view_name, text_length from sys.user_views;
+
+Insert into chercheur_o
+ values ('c9','Bella',3, 'e3', 'oo');
+ Insert into chercheur_o
+ values ('c10','Bella',2, 'e2', 'rx');
+Select * from chercheur_o;
+ Select * from chercheurs;
+ Delete from chercheurs
+ where Numchercheur='c9' or Numchercheur='c10';
+
+CREATE or REPLACE VIEW cout_projet (n_projet, nom_projet, nb_jours, cout)
+ AS Select NumProjet, NomProjet, nb_jours, nb_jours*500 FROM projets;
+ Select * from cout_projet;
+
+ Set verify off
+ ACCEPT cout_saisi PROMPT 'Entrez le cout minimum: '
+ Select * from cout_projet
+ where cout > &cout_saisi;
+ ACCEPT cout_saisi PROMPT 'Entrez le cout minimum: '
+ Select numprojet, nomprojet, nb_jours, nb_jours*500 from projets
+ where nb_jours*500 > &cout_saisi;
+
+Alter table specialite
+-- add (tarif number);
+ Update specialite
+ set tarif = 800 where specialite='bd';
+ Update specialite
+ set tarif = 200 where specialite='si';
+ Update specialite
+ set tarif = 700 where specialite='oo';
+ Update specialite
+ set tarif = 300 where specialite='rx';
+ Update specialite
+ set tarif = 500 where specialite='se';
+ select * from specialite;
+
+
+CREATE Or replace VIEW cout_projet1 (n_projet, nom_projet, cout)
+ AS Select p.NumProjet, NomProjet, sum(nbJourSem*tarif)FROM projets p,
+travailler t, chercheurs c, specialite s
+ where s.specialite=c.specialite
+ and c.NumChercheur=t.idNumChercheur
+ and t.NumProjet=p.NumProjet
+ group by p.NumProjet, p.NomProjet;
+ select * from cout_projet1;
+
+
+select * from cout_projet1
+ where cout > 1000;
+ Select p.NumProjet, p.nomProjet, sum(nbJourSem*tarif)FROM projets p, travailler
+t, chercheurs c, specialite s
+ where s.specialite=c.specialite
+ and c.NumChercheur=t.idNumChercheur
+ and t.NumProjet=p.NumProjet
+ group by p.NumProjet, p.nomProjet
+ having sum(nbJourSem*tarif) > 1000;
+
+ CREATE or REPLACE VIEW travaux (nom_du_projet, nom_du_chercheur, nombre_jours)
+ AS Select p.nomProjet, c.NomChercheur, nbJourSem FROM projets p,
+travailler t, chercheurs c
+ where p.NumProjet=t.NumProjet
+ and t.IdNumChercheur=c.NumChercheur
+ group by p.NomProjet, c.NomChercheur, t.nbJourSem;
+ select * from travaux;
+ 
+ 
+ 
+CREATE or REPLACE VIEW chercheur_2 (n_o, nom_o, univ_o, n_equ_o, spec_o)
+ AS Select numchercheur, nomchercheur, universite, numequipe, specialite FROM
+chercheurs
+ WHERE specialite IN (select specialite from specialite where
+nom_specialite like '%objet%')
+ with check option
+ ;
+
+ 
+
+Insert into chercheur_o
+ values ('c11','Bella',2, 'e3', 'bd');
+ 
+ 
+ 
+ 
+ 
+ 
+  CREATE or REPLACE VIEW projet_e1 (n_projet, n_chercheur, nb_jour_sem)
+ AS Select numprojet, idnumchercheur, nbJourSem FROM travailler
+ where idnumchercheur in (select numchercheur from chercheurs where numequipe =
+'e1')
+ and numprojet in (Select p.numprojet FROM projets p, travailler t, chercheurs
+c, specialite s
+ where s.specialite=c.specialite
+ and c.numchercheur=t.idnumchercheur
+ and t.numprojet=p.numprojet
+ group by p.numprojet
+ having sum(nbJourSem*tarif) > 1000)
+ with check option;
+ select * from projet_e1;
+ Insert into projet_e1
+ values ('p2','c2',2);
+ Insert into projet_e1
+values ('p3','c1',1);
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+--TRACE ::::
+
+
+
+
+
+View CHERCHEUR_O créé(e).
+
+
+N_O         NOM_O          UNIV_O N_EQU_O  SPEC_O    
+----------- ---------- ---------- -------- ----------
+c3           Chiheb             3 e1       oo        
+c7          Mohamed             2 e3       oo        
+
+
+VIEW_NAME                      TEXT_LENGTH
+------------------------------ -----------
+AQ$DEF$_AQCALL                        2362
+AQ$DEF$_AQERROR                       2363
+AQ$_DEF$_AQCALL_F                      988
+AQ$_DEF$_AQERROR_F                     989
+CHERCHEUR_2                            196
+CHERCHEUR_O                            177
+COUT_PROJET                             64
+COUT_PROJET1                           241
+MVIEW_EVALUATIONS                      397
+MVIEW_EXCEPTIONS                       269
+MVIEW_FILTER                           763
+
+VIEW_NAME                      TEXT_LENGTH
+------------------------------ -----------
+MVIEW_FILTERINSTANCE                   659
+MVIEW_LOG                              596
+MVIEW_RECOMMENDATIONS                  520
+MVIEW_WORKLOAD                         436
+PRODUCT_PRIVS                          177
+PROJET_E1                              417
+TRAVAUX                                207
+
+18 lignes sélectionnées. 
+
+
+1 ligne inséré.
+
+
+1 ligne inséré.
+
+
+N_O         NOM_O          UNIV_O N_EQU_O  SPEC_O    
+----------- ---------- ---------- -------- ----------
+c3           Chiheb             3 e1       oo        
+c7          Mohamed             2 e3       oo        
+c9          Bella               3 e3       oo        
+
+
+NUMCHERCHEU NOMCHERCHE SPECIALITE UNIVERSITE NUMEQUIP   NB_JOURS
+----------- ---------- ---------- ---------- -------- ----------
+c1          Ahmed      bd                  2 e1                 
+c2          Ameni      si                  2 e3                 
+c3           Chiheb    oo                  3 e1                 
+c4          Eya        rx                  2 e3                 
+c5           Cyrine     rx                 3 e2                 
+c6          Ghassen    oo                  1 e3                 
+c7          Mohamed    oo                  2 e3                 
+c8           Nizar     si                  3 e3                 
+c9          Bella      oo                  3 e3                 
+c10         Bella      rx                  2 e2                 
+
+10 lignes sélectionnées. 
+
+
+2 lignes supprimé.
+
+
+View COUT_PROJET créé(e).
+
+
+N_PROJET NOM_PROJET             NB_JOURS       COUT
+-------- -------------------- ---------- ----------
+p1       objet-relationnel                         
+p2       intranet                                  
+p3       sans fil                                  
+p4       groupware                                 
+p5       uml                                       
+p6       datamining                                
+
+6 lignes sélectionnées. 
+
+aucune ligne sélectionnée
+aucune ligne sélectionnée
+
+Table SPECIALITE modifié(e).
+
+
+1 ligne mis à jour.
+
+
+1 ligne mis à jour.
+
+
+1 ligne mis à jour.
+
+
+1 ligne mis à jour.
+
+
+1 ligne mis à jour.
+
+
+SPECIALITE NOM_SPECIALITE                 NB_CHERCHEURS      TARIF
+---------- ------------------------------ ------------- ----------
+bd         bases de données                                    800
+si         systeme d'information                               200
+oo         oriente objet                                       700
+rx         reseaux                                             300
+se         systeme d'exploitation                              500
+
+
+View COUT_PROJET1 créé(e).
+
+
+N_PROJET NOM_PROJET                 COUT
+-------- -------------------- ----------
+p5       uml                         800
+p4       groupware                   800
+p3       sans fil                    600
+p1       objet-relationnel          5000
+p2       intranet                   3000
+
+
+N_PROJET NOM_PROJET                 COUT
+-------- -------------------- ----------
+p1       objet-relationnel          5000
+p2       intranet                   3000
+
+
+NUMPROJE NOMPROJET            SUM(NBJOURSEM*TARIF)
+-------- -------------------- --------------------
+p1       objet-relationnel                    5000
+p2       intranet                             3000
+
+
+View TRAVAUX créé(e).
+
+
+NOM_DU_PROJET        NOM_DU_CHE NOMBRE_JOURS
+-------------------- ---------- ------------
+intranet             Ahmed                 2
+objet-relationnel    Ahmed                 1
+uml                   Nizar                3
+uml                  Ameni                 1
+groupware             Nizar                1
+sans fil              Cyrine               1
+intranet             Mohamed               2
+objet-relationnel    Mohamed               3
+groupware            Ameni                 3
+objet-relationnel     Chiheb               3
+sans fil             Eya                   2
+
+11 lignes sélectionnées. 
+
+
+View CHERCHEUR_2 créé(e).
+
+
+1 ligne inséré.
+
+
+View PROJET_E1 créé(e).
+
+
+N_PROJET N_CHERCHEUR NB_JOUR_SEM
+-------- ----------- -----------
+p1       c1                    1
+p2       c1                    2
+p1       c3                    3
+
+
+Erreur commençant à la ligne: 110 Fichier @ C:\Users\aya zouay\AppData\Roaming\SQL Developer\Part3.sql
+Dans la commande -
+ Insert into projet_e1
+ values ('p2','c2',2)
+Rapport d'erreur -
+ORA-01402: view WITH CHECK OPTION where-clause violation
+
+
+Erreur commençant à la ligne: 112 Fichier @ C:\Users\aya zouay\AppData\Roaming\SQL Developer\Part3.sql
+Dans la commande -
+ Insert into projet_e1
+values ('p3','c1',1)
+Rapport d'erreur -
+ORA-01402: view WITH CHECK OPTION where-clause violation
+
+
+
+
+
+--Les vues :
+
+
+
+
+
+
+
+N_O         NOM_O          UNIV_O N_EQU_O  SPEC_O    
+----------- ---------- ---------- -------- ----------
+c3           Chiheb             3 e1       oo        
+c7          Mohamed             2 e3       oo        
+
+
+N_PROJET NOM_PROJET             NB_JOURS       COUT
+-------- -------------------- ---------- ----------
+p1       objet-relationnel                         
+p2       intranet                                  
+p3       sans fil                                  
+p4       groupware                                 
+p5       uml                                       
+p6       datamining                                
+
+6 lignes sélectionnées. 
+
+
+N_PROJET NOM_PROJET                 COUT
+-------- -------------------- ----------
+p5       uml                         800
+p4       groupware                   800
+p3       sans fil                    600
+p1       objet-relationnel          5000
+p2       intranet                   3000
+
+
+NOM_DU_PROJET        NOM_DU_CHE NOMBRE_JOURS
+-------------------- ---------- ------------
+intranet             Ahmed                 2
+objet-relationnel    Ahmed                 1
+uml                   Nizar                3
+uml                  Ameni                 1
+groupware             Nizar                1
+sans fil              Cyrine               1
+intranet             Mohamed               2
+objet-relationnel    Mohamed               3
+groupware            Ameni                 3
+objet-relationnel     Chiheb               3
+sans fil             Eya                   2
+
+11 lignes sélectionnées. 

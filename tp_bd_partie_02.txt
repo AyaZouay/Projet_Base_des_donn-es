@@ -1,0 +1,137 @@
+ALTER TABLE equipes ADD
+(nb_projets NUMBER(2),
+ nb_chercheurs NUMBER (2)
+);
+ALTER TABLE chercheurs ADD
+(nb_jours NUMBER(2)
+);
+ALTER TABLE projets ADD
+(nb_chercheurs NUMBER (2),
+ nb_jours NUMBER (2)
+);
+drop table specialite;
+create table specialite
+(specialite varchar(10),
+ nom_specialite varchar(30),
+ nb_chercheurs number(2),
+ constraint pk_specialite primary key (specialite)
+);
+ALTER TABLE equipes
+MODIFY (nomequipe varchar(30));
+ALTER TABLE projets
+MODIFY (nomprojet varchar(15));
+DESC equipes;
+SELECT * FROM equipes;
+DESC projets;
+SELECT * FROM projets;
+INSERT INTO specialite(specialite,nom_specialite) VALUES
+('bd','bases de données');
+INSERT INTO specialite(specialite,nom_specialite) VALUES
+('si','systeme d''information');
+INSERT INTO specialite(specialite,nom_specialite) VALUES
+('oo','oriente objet');
+INSERT INTO specialite(specialite,nom_specialite) VALUES
+('rx','reseaux');
+INSERT INTO specialite(specialite,nom_specialite) VALUES
+('se','systeme d''exploitation');
+
+
+UPDATE equipes
+SET NomEquipe='Reseaux et Communication'
+WHERE NumEquipe='e3';
+
+
+UPDATE chercheurs
+Set NumEquipe='e3'
+Where NumChercheur='c4' OR NumChercheur='c7';
+
+
+UPDATE projets
+Set NumCherResp='c1'
+Where NumProjet='p6';
+
+Update projets
+Set NumCherResp='c6'
+where NumProjet='p2';
+
+
+
+
+ALTER TABLE chercheurs
+ADD CONSTRAINT fk_chercheur_speci FOREIGN KEY (specialite)
+REFERENCES specialite(specialite);
+ALTER TABLE chercheurs
+MODIFY (specialite CONSTRAINT nn_specialite NOT NULL);
+
+
+ALTER TABLE projets
+DISABLE CONSTRAINT FK_EquipeP;
+SELECT constraint_name, constraint_type, table_name, status from
+USER_CONSTRAINTS
+WHERE table_name='PROJETS';
+SELECT constraint_name, table_name, column_name FROM USER_CONS_COLUMNS
+WHERE table_name='PROJETS';
+INSERT INTO projets(NumProjet,NomProjet,NumEquipe)
+VALUES ('p7','projet7','e4');
+INSERT INTO projets(NumProjet,NomProjet,NumEquipe)
+VALUES ('p8','projet19','e5');
+SELECT * FROM projets;
+drop table rejets;
+CREATE TABLE rejets
+(
+ ligne rowid,
+ proprietaire varchar(30),
+ nom_table varchar(30),
+ contrainte varchar(30)
+);
+ALTER TABLE projets
+ENABLE CONSTRAINT FK_EquipeP
+EXCEPTIONS INTO rejets;
+SELECT * from rejets;
+SELECT rowid,p.* FROM projets p;
+DELETE FROM projets
+WHERE NumProjet='p7';
+DELETE FROM projets
+WHERE NumProjet='p8';
+ALTER TABLE projets
+ENABLE CONSTRAINT FK_EquipeP
+EXCEPTIONS INTO rejets;
+SELECT constraint_name, constraint_type, table_name, status from
+USER_CONSTRAINTS
+WHERE table_name='PROJETS';
+SELECT constraint_name, table_name, column_name FROM USER_CONS_COLUMNS
+WHERE table_name='PROJETS';
+
+
+select * from specialite;
+select * from rejets;
+
+
+
+
+
+
+--contenue table specialite
+
+
+
+
+SPECIALITE NOM_SPECIALITE                 NB_CHERCHEURS
+---------- ------------------------------ -------------
+bd         bases de données                            
+si         systeme d'information                       
+oo         oriente objet                               
+rx         reseaux                                     
+se         systeme d'exploitation            
+          
+--contenue rejets
+
+LIGNE              PROPRIETAIRE                   NOM_TABLE                      CONTRAINTE                    
+------------------ ------------------------------ ------------------------------ ------------------------------
+AAAE62AABAAAK/BAAG SYSTEM                         PROJETS                        FK_EQUIPEP                    
+AAAE62AABAAAK/BAAI SYSTEM                         PROJETS                        FK_EQUIPEP                    
+
+
+
+
+
